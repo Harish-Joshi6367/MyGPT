@@ -38,14 +38,14 @@ router.get("/thread/:threadId", async(req, res) => {
     const {threadId} = req.params;
 
     try {
-        const thread = await Thread.findById({thread});
+        const thread = await Thread.findOne({threadId});
         
         if(!thread) {
-            res.status(404).json({error: "Thread not found"});
+            return res.status(404).json({error: "Thread not found"});
         }
 
         res.json(thread.messages);
-    } catch {
+    } catch(err) {
         console.log(err);
         res.status(500).json({error: "failed to fetch chat"});
     }
@@ -75,7 +75,7 @@ router.delete("/thread/:threadId", async (req,res) => {
 router.post("/chat", async (req, res) => {
     const {threadId, message} = req.body;
 
-    if(!threadId || !message) {
+    if(!threadId || !message || typeof message !== "string" || message.trim() === "") {
         res.status(400).json({error: "msissing required fields"});
     }
 
